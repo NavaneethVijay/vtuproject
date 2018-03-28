@@ -1,0 +1,10 @@
+step 1: Initialize base url, api key, target date, feature name list.
+step 2: open a csv file in write mode
+            set the fieldnames to feature list values
+step 3: for each in range(days)
+            send a request to the base url defined
+            convert the api response to json format
+            write the json data to the opened csv file
+            increment the target date to next day
+        end for
+step 4: end
