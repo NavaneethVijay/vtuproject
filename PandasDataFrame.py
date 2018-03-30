@@ -14,7 +14,7 @@ def derive_nth_day_feature(df, feature, N):
 
 for feature in features:  
     if feature != 'date':
-        for N in range(1, 3):
+        for N in range(1, 4):
             derive_nth_day_feature(df, feature, N)
 
 df.columns 
