@@ -1,0 +1,7 @@
+Step1: Make a list containing features to remove
+Step2: Make a list containing features to keep
+Step3: Convert the selected feature objects into numerical values
+        Set not available values to 'coerce'
+Step4: Transpose the dataframe Set
+Step5: Calculate IQR and remove outliers
+Step6: 

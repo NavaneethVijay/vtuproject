@@ -20,7 +20,7 @@ def extract_weather_data(url, api_key, target_date, days):
         with open('f2016.csv', 'w', newline='') as f:
             thewriter = csv.DictWriter(f, fieldnames=features)
             thewriter.writeheader()
-       
+
             for _ in range(days):
                 url = BASE_URL.format(API_KEY, target_date.strftime('%Y%m%d'))
                 response = urllib.request.urlopen(url)
@@ -39,7 +39,6 @@ def extract_weather_data(url, api_key, target_date, days):
                 'maxpressurem' : data['history']['dailysummary'][0]['maxpressurem'],
                 'minpressurem' : data['history']['dailysummary'][0]['minpressurem'],
                 'precipm' : data['history']['dailysummary'][0]['precipm']})
-                print (data['history']['dailysummary'][0]['meantempm'])
                 time.sleep(6)
                 target_date += timedelta(days=1)
             return 

@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
-df = pd.read_csv(r"C:\Users\LalithaShankar\Desktop\FinalYearProject\VtuProject\vtuproject\f2016.csv").set_index('date')
+df = pd.read_csv(r"f2016.csv").set_index('date')
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
 

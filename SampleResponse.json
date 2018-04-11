@@ -1,0 +1,41 @@
+
+{
+  "response": {
+  "version":"0.1",
+  "termsofService":"http://www.wunderground.com/weather/api/d/terms.html",
+  "features": {
+  "history": 1
+  }
+		,
+	"error": {
+		"type": "unknownfeature"
+	}
+	}
+		,
+	"history": {
+		"dailysummary": [
+		{ 
+                "date": {
+                "pretty": "12:00 AM IST on April 06, 2018",
+                "year": "2018",
+                "mon": "04",
+                "mday": "06",
+                "hour": "00",
+                "min": "00",
+                "tzname": "Asia/Kolkata"
+                 },
+                "meantempm":"30","meantempi":"85","meandewptm":"24", 
+                "meandewpti":"76","meanpressurem":"1008.60","meanpressurei":"29.79",
+                "meanwindspdm":"7","meanwindspdi":"5", "meanwdire":"South",
+                "meanwdird":"181","meanvism":"6.5", "meanvisi":"4.0",
+                "humidity":"74","maxtempm":"35", "maxtempi":"95",
+                "mintempm":"25", "mintempi":"77","maxhumidity":"89",
+                "minhumidity":"50","maxdewptm":"25", "maxdewpti":"77",
+                "mindewptm":"23", "mindewpti":"73","maxpressurem":"1010", 
+                "maxpressurei":"29.84","minpressurem":"1007", "minpressurei":"29.74",
+                "maxwspdm":"22", "maxwspdi":"14","precipm":"0.0", 
+                "precipi":"0.00","precipsource":"3Or6HourObs"
+        }
+		]
+	}
+}
