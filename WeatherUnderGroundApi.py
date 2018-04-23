@@ -4,7 +4,6 @@ from collections import namedtuple
 import pandas as pd
 import requests
 import matplotlib.pyplot as plt
-import pickle
 import urllib.request, json
 import csv
 
