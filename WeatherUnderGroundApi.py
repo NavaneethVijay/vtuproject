@@ -9,15 +9,15 @@ import urllib.request, json
 import csv
 
 
-API_KEY = "dbe60ccafe99d108"
+API_KEY = "98912e10038ad211"
 BASE_URL = "http://api.wunderground.com/api/{}/history_{}/q/IN/chennai.json"
 
 features = ["date", "meantempm", "meandewptm", "meanpressurem", "maxhumidity", "minhumidity", "maxtempm",
             "mintempm", "maxdewptm", "mindewptm", "maxpressurem", "minpressurem", "precipm"]
-target_date = datetime(2015, 1, 1)
+target_date = datetime(2017, 1, 1)
 
 def extract_weather_data(url, api_key, target_date, days):
-        with open('f2016.csv', 'w', newline='') as f:
+        with open('f2017.csv', 'w', newline='') as f:
             thewriter = csv.DictWriter(f, fieldnames=features)
             thewriter.writeheader()
 
@@ -43,4 +43,4 @@ def extract_weather_data(url, api_key, target_date, days):
                 target_date += timedelta(days=1)
             return 
 
-extract_weather_data(BASE_URL, API_KEY, target_date,365)
+extract_weather_data(BASE_URL, API_KEY, target_date,370)
