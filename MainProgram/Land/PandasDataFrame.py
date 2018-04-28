@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 df = pd.read_csv(r"f2016.csv").set_index('date')
 
