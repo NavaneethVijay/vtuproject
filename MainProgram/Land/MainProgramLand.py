@@ -5,7 +5,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from IPython import get_ipython
 from pandas.core import datetools
-
+from sklearn.model_selection import train_test_split  
+from sklearn.linear_model import LinearRegression  
 
 df = pd.read_csv(r"dataset.csv").set_index('date')
 
@@ -102,7 +103,7 @@ X = sm.add_constant(X)
 
 X.iloc[:5, :5]  
 
-
+#from ghere bakward leimination
 # (1) select a significance value
 alpha = 0.05
 
@@ -119,4 +120,22 @@ X = X.drop('mindewptm_2', axis=1)
 model = sm.OLS(y, X).fit()
 
 model.summary()  
+
+#code for backward
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12)
+
+regressor = LinearRegression()
+
+# fit the build the model by fitting the regressor to the training data
+regressor.fit(X_train, y_train)
+
+# make a prediction set using the test set
+prediction = regressor.predict(X_test)
+
+# Evaluate the prediction accuracy of the model
+from sklearn.metrics import mean_absolute_error, median_absolute_error  
+
+print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))  
+print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
+print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))  
 
