@@ -1,4 +1,4 @@
- date_of_observation,sea_level_pressure,dew_point,wind_direction,wind_speed,air_temperature
+date,Sea_Level_Pressure,Dew_Point_Temperature,Wind_Direction,Wind_Speed,Air_Temperature
 5/2/2015,29.70333333,77.5,186.6666667,16.2,86.23333333
 5/3/2015,29.71,70.2,170,5.8,81.1
 5/12/2015,29.69333333,78.26666667,175,12,86.95
