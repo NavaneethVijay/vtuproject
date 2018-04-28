@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from IPython import get_ipython
 from pandas.core import datetools
 from sklearn.model_selection import train_test_split  
-from sklearn.linear_model import LinearRegression  
+from sklearn.linear_model import LinearRegression 
+import statsmodels.api as sm 
 
 df = pd.read_csv(r"dataset.csv").set_index('date')
 
