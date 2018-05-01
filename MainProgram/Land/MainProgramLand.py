@@ -10,6 +10,7 @@ from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm 
 
 df = pd.read_csv(r"dataset.csv").set_index('date')
+dfs = pd.read_csv(r"seaST.csv").set_index('date')
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
 
