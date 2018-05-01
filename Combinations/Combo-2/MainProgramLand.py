@@ -9,14 +9,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression 
 import statsmodels.api as sm 
 
-df = pd.read_csv(r"dataset.csv").set_index('date')
-dfs = pd.read_csv(r"seaST.csv").set_index('date')
+df = pd.read_csv(r"Land_sealevelpressure.csv").set_index('date')
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
 
 N = 1
 features = ["date", "meantempm", "meandewptm", "meanpressurem", "maxhumidity", "minhumidity", "maxtempm",  
-            "mintempm", "maxdewptm", "mindewptm", "maxpressurem", "minpressurem", "precipm"]
+            "mintempm", "maxdewptm", "mindewptm", "maxpressurem", "minpressurem", "precipm", "sealevelpressure"]
 
 def derive_nth_day_feature(df, feature, N):  
     rows = df.shape[0]
@@ -91,7 +90,8 @@ predictors = ['meantempm_1',  'meantempm_2',  'meantempm_3',
               'meandewptm_1', 'meandewptm_2', 'meandewptm_3',
               'maxdewptm_1',  'maxdewptm_2',  'maxdewptm_3',
               'mindewptm_1',  'mindewptm_2',  'mindewptm_3',
-              'maxtempm_1',   'maxtempm_2',   'maxtempm_3']
+              'maxtempm_1',   'maxtempm_2',   'maxtempm_3' , 
+              'sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3']
 
 df2 = df[['meantempm'] + predictors] 
 
@@ -116,7 +116,7 @@ model = sm.OLS(y, X).fit()
 model.summary()  
 
 # (4) - Use pandas drop function to remove this column from X
-X = X.drop('mindewptm_2', axis=1)
+X = X.drop('maxdewptm_3', axis=1)
 
 # (5) Fit the model 
 model = sm.OLS(y, X).fit()
