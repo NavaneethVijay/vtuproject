@@ -11,7 +11,7 @@ import statsmodels.api as sm
 import operator
 from sklearn.metrics import mean_absolute_error, median_absolute_error  
 
-df = pd.read_csv(r"dataset.csv").set_index('date')
+df = pd.read_csv(r"dataset.csv")
 
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
@@ -152,4 +152,18 @@ print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
 print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
 
-plt.plot(X_test.index[60:90], y_test[60:90], 'r' ,  X_test.index[60:90], prediction[60:90])
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+ax1.plot(y_test, label='actual values')
+ax1.plot(prediction,label='predicted values')
+plt.xlabel('Training dataset')  
+plt.ylabel('Mean temperature') 
+#plt.xlim(0.1,20)
+plt.legend(loc='upper left');
+plt.show()
+
+
+
+
+
