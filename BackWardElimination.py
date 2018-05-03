@@ -5,6 +5,6 @@ while q:
     if (max_value > 0.05):
         X = X.drop(model.pvalues.index[max_index], axis=1)
         model = sm.OLS(y, X).fit()
-        model.summary()
+        print(model.summary())
     else:
         q = False

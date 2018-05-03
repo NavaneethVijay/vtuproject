@@ -46,7 +46,7 @@ def derive_nth_day_feature(df, feature, N):
 
 for feature in features:  
     if feature != 'date':
-        for N in range(1, 4):
+        for N in range(1, 5):
             derive_nth_day_feature(df, feature, N)
 
 
@@ -68,10 +68,10 @@ plt.show() """
 df = df.dropna() 
 df.corr()[['meantemp']].sort_values('meantemp') 
 
-predictors = ['sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3' , 
-              'windspeed_1' , 'windspeed_2' , 'windspeed_3' , 
-              'dewpoint_1' , 'dewpoint_2' , 'dewpoint_3',
-              'meantemp_1',  'meantemp_2',  'meantemp_3'
+predictors = ['sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3', 'sealevelpressure_4',
+              'windspeed_1' , 'windspeed_2' , 'windspeed_3','windspeed_4', 
+              'dewpoint_1' , 'dewpoint_2' , 'dewpoint_3', 'dewpoint_4',
+              'meantemp_1',  'meantemp_2',  'meantemp_3', 'meantemp_4',
               ] 
 df2 = df[['meantemp'] + predictors]
 
@@ -146,7 +146,7 @@ y_test = y.tail(426)
 
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12) 
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12) 
 
 regressor = LinearRegression()
 
@@ -155,7 +155,18 @@ regressor.fit(X_train, y_train)
 
 # make a prediction set using the test set
 prediction = regressor.predict(X_test)
-from sklearn.metrics import mean_absolute_error, median_absolute_error  
+from sklearn.metrics import mean_absolute_error, median_absolute_error
 print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))  
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
 print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
+
+
+
+plt.plot(X_test.index[50:80], y_test[50:80],'-')
+plt.plot(X_test.index[50:80], prediction[50:80],'-')
+
+plt.plot(X_test.index[0:100],prediction[0:100],X_test.index[0:100], y_test[0:100],'-')
+
+
+
+
