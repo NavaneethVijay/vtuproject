@@ -62,7 +62,7 @@ spread['outliers'] = (spread['min']<(spread['25%']-(3*IQR)))|(spread['max'] > (s
 # just display the features containing extreme outliers
 spread.loc[spread.outliers,]   
 
-get_ipython().run_line_magic('matplotlib', 'inline')
+'''get_ipython().run_line_magic('matplotlib', 'inline')
 
 plt.rcParams['figure.figsize'] = [14, 8]  
 df.maxhumidity_1.hist()  
@@ -73,7 +73,7 @@ plt.show()
 df.minpressurem_1.hist()  
 plt.title('Distribution of minpressurem_1')  
 plt.xlabel('minpressurem_1')  
-plt.show() 
+plt.show() '''
 
 for precip_col in ['precipm_1', 'precipm_2', 'precipm_3']:  
     # create a boolean array of values representing nans
@@ -117,7 +117,7 @@ model = sm.OLS(y, X).fit()
 # (3) evaluate the coefficients' p-values
 model.summary()  
 
-# (4) - Use pandas drop function to remove this column from X
+#code for backward
 q = True
 while q:
     max_index, max_value = max(enumerate(model.pvalues), key=operator.itemgetter(1))
@@ -128,7 +128,9 @@ while q:
     else:
         q = False
 
-#code for backward
+
+
+#training set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=20)
 
 
@@ -152,14 +154,14 @@ print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
 print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
 
+y_test = y_test.tolist()
 
-fig = plt.figure()
+fig = plt.figure(figsize=(20,10))
 ax1 = fig.add_subplot(111)
 ax1.plot(y_test, label='actual values')
 ax1.plot(prediction,label='predicted values')
 plt.xlabel('Training dataset')  
 plt.ylabel('Mean temperature') 
-#plt.xlim(0.1,20)
 plt.legend(loc='upper left');
 plt.show()
 
