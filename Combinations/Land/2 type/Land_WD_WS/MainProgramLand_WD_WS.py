@@ -8,14 +8,17 @@ from pandas.core import datetools
 from sklearn.model_selection import train_test_split  
 from sklearn.linear_model import LinearRegression 
 import statsmodels.api as sm 
+import operator
+from sklearn.metrics import mean_absolute_error, median_absolute_error  
 
-df = pd.read_csv(r"Land_sealevelpressure.csv").set_index('date')
+df = pd.read_csv(r"Land_WD_WS.csv")
+
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
 
 N = 1
 features = ["date", "meantempm", "meandewptm", "meanpressurem", "maxhumidity", "minhumidity", "maxtempm",  
-            "mintempm", "maxdewptm", "mindewptm", "maxpressurem", "minpressurem", "precipm", "sealevelpressure"]
+            "mintempm", "maxdewptm", "mindewptm", "maxpressurem", "minpressurem", "precipm" ,"winddirection","windspeed"]
 
 def derive_nth_day_feature(df, feature, N):  
     rows = df.shape[0]
@@ -25,7 +28,7 @@ def derive_nth_day_feature(df, feature, N):
 
 for feature in features:  
     if feature != 'date':
-        for N in range(1, 4):
+        for N in range(1, 5):
             derive_nth_day_feature(df, feature, N)
 #df.columns 
 #df.shape
@@ -61,16 +64,13 @@ spread.loc[spread.outliers,]
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
-plt.rcParams['figure.figsize'] = [14, 8]  
-df.maxhumidity_1.hist()  
-plt.title('Distribution of maxhumidity_1')  
-plt.xlabel('maxhumidity_1')  
-plt.show() 
-
-df.minpressurem_1.hist()  
-plt.title('Distribution of minpressurem_1')  
-plt.xlabel('minpressurem_1')  
-plt.show() 
+for sp in spread.index:
+    plt.rcParams['figure.figsize'] = [14, 8]  
+    print(sp)
+    df[sp].hist() 
+    plt.title('Distribution of maxhumidity_1')  
+    plt.xlabel(sp)  
+    plt.show()
 
 for precip_col in ['precipm_1', 'precipm_2', 'precipm_3']:  
     # create a boolean array of values representing nans
@@ -81,23 +81,24 @@ df = df.dropna()
 
 #finding corelleaction
 
-df.corr()[['meantempm']].sort_values('meantempm')  
+stats = df.corr()[['meantempm']].sort_values('meantempm') 
 
+elements = []
 
-
-predictors = ['meantempm_1',  'meantempm_2',  'meantempm_3',  
-              'mintempm_1',   'mintempm_2',   'mintempm_3',
-              'meandewptm_1', 'meandewptm_2', 'meandewptm_3',
-              'maxdewptm_1',  'maxdewptm_2',  'maxdewptm_3',
-              'mindewptm_1',  'mindewptm_2',  'mindewptm_3',
-              'maxtempm_1',   'maxtempm_2',   'maxtempm_3' , 
-              'sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3']
+for j,ele in enumerate(stats.meantempm):
+    if ((abs(ele) > 0.5) and (stats.index[j] != 'meantempm')):
+        elements.append(stats.index[j])
+        print(stats.index[j])
+        
+        
+        
+predictors = elements
 
 df2 = df[['meantempm'] + predictors] 
 
 
 # separate our my predictor variables (X) from my outcome variable y
-X = df2[predictors]  
+X = df2[predictors]
 y = df2['meantempm']
 
 # Add a constant to the predictor variable set to represent the Bo intercept
@@ -116,15 +117,25 @@ model = sm.OLS(y, X).fit()
 model.summary()  
 
 # (4) - Use pandas drop function to remove this column from X
-X = X.drop('maxdewptm_3', axis=1)
-
-# (5) Fit the model 
-model = sm.OLS(y, X).fit()
-
-model.summary()  
+q = True
+while q:
+    max_index, max_value = max(enumerate(model.pvalues), key=operator.itemgetter(1))
+    if (max_value > 0.05):
+        X = X.drop(model.pvalues.index[max_index], axis=1)
+        model = sm.OLS(y, X).fit()
+        print(model.summary())
+    else:
+        q = False
 
 #code for backward
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=20)
+
+
+X_train = X.head(800)
+X_test = X.tail(296)
+
+y_train = y.head(800)
+y_test = y.tail(296)
 
 regressor = LinearRegression()
 
@@ -135,9 +146,18 @@ regressor.fit(X_train, y_train)
 prediction = regressor.predict(X_test)
 
 # Evaluate the prediction accuracy of the model
-from sklearn.metrics import mean_absolute_error, median_absolute_error  
 
 print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))  
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
-print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))  
+print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
 
+#plt.plot(X_test.index[60:90], y_test[60:90], 'r' ,  X_test.index[60:90], prediction[60:90])
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+ax1.plot(y_test, label='actual values')
+ax1.plot(prediction,label='predicted values')
+plt.xlabel('Training dataset')  
+plt.ylabel('Mean temperature') 
+#plt.xlim(0.1,20)
+plt.legend(loc='upper left');
+plt.show()
