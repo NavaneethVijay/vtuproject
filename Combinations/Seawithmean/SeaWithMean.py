@@ -11,15 +11,16 @@ import statsmodels.api as sm
 import operator
 from sklearn.metrics import mean_absolute_error, median_absolute_error 
 
-df = pd.read_csv(r"SeaST.csv")
 
-df = df.apply(lambda x: x.str.strip()).replace('', np.nan)
+df = pd.read_csv(r"SeaWithMean.csv")
 
-features = ['sealevelpressure','airtemperature','dewpoint','winddirection','windspeed']
+#df = df.apply(lambda x: x.str.strip()).replace('', np.nan)
+
+features = ['sealevelpressure','airtemperature','dewpoint','winddirection','windspeed', 'meantemp']
 
 N = 1
 
-to_keep = ['sealevelpressure','airtemperature','dewpoint','winddirection','windspeed']
+to_keep = ['sealevelpressure','airtemperature','dewpoint','winddirection','windspeed', 'meantemp']
 
 df = df[to_keep]
 
@@ -27,7 +28,6 @@ df = df.apply(pd.to_numeric, errors='coerce')
 
 mean = df.mean()
 
-#replacing NaN values with mean 
 df['sealevelpressure'].replace(to_replace=np.nan, value=mean[0])
 
 df['airtemperature'].replace(to_replace=np.nan, value=mean[1])
@@ -37,6 +37,8 @@ df['dewpoint'].replace(to_replace=np.nan, value=mean[2])
 df['winddirection'].replace(to_replace=np.nan, value=mean[3])
 
 df['windspeed'].replace(to_replace=np.nan, value=mean[4])
+
+df['meantemp'].replace(to_replace=np.nan, value=mean[4])
 
 def derive_nth_day_feature(df, feature, N):  
     rows = df.shape[0]
@@ -59,48 +61,7 @@ spread['outliers'] = (spread['min']<(spread['25%']-(3*IQR)))|(spread['max'] > (s
 
 spread.loc[spread.outliers,] 
 
-df = df.dropna() 
-
-#pearson correlation
-df.corr()[['airtemperature']].sort_values('airtemperature') 
-
-
-predictors = ['sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3' , 
-              'airtemperature_1' , 'airtemperature_2' , 'airtemperature_3' , 
-              'dewpoint_1' , 'dewpoint_2' , 'dewpoint_3'
-             ] 
-
-df2 = df[['airtemperature'] + predictors]
-
-
-#mean temp with otherfeatures
-get_ipython().run_line_magic('matplotlib', 'inline')
-
-# manually set the parameters of the figure to and appropriate size
-plt.rcParams['figure.figsize'] = [16, 22]
-
-# call subplots specifying the grid structure we desire and that 
-# the y axes should be shared
-fig, axes = plt.subplots(nrows=3, ncols=3, sharey=True)
-
-# Since it would be nice to loop through the features in to build this plot
-# let us rearrange our data into a 2D array of 6 rows and 3 columns
-arr = np.array(predictors).reshape(3, 3)
-
-# use enumerate to loop over the arr 2D array of rows and columns
-# and create scatter plots of each meantempm vs each feature
-for row, col_arr in enumerate(arr):  
-    for col, feature in enumerate(col_arr):
-        axes[row, col].scatter(df2[feature], df2['airtemperature'])
-        if col == 0:
-            axes[row, col].set(xlabel=feature, ylabel='airtemperature')
-        else:
-            axes[row, col].set(xlabel=feature)
-plt.show()
-#mean temp with otherfeatures
-
-
-# histogram of the features 
+# data distribution histograms
 """get_ipython().run_line_magic('matplotlib', 'inline')
 
  for sp in spread.index:
@@ -110,17 +71,33 @@ plt.show()
     plt.title('Distribution of {}'.format(sp))  
     plt.xlabel(sp)  
     plt.show()"""
+# data distribution histograms
+    
+    
+df = df.dropna() 
+
+#pearson correlation
+df.corr()[['meantemp']].sort_values('meantemp') 
+
+predictors = ['sealevelpressure_1' , 'sealevelpressure_2' , 'sealevelpressure_3', 'sealevelpressure_4',
+              'windspeed_1' , 'windspeed_2' , 'windspeed_3','windspeed_4', 
+              'dewpoint_1' , 'dewpoint_2' , 'dewpoint_3', 'dewpoint_4',
+              'meantemp_1',  'meantemp_2',  'meantemp_3', 'meantemp_4',
+              ] 
+df2 = df[['meantemp'] + predictors]
+
+
+
 
 # separate our my predictor variables (X) from my outcome variable y
-X = df2[predictors]  
-y = df2['airtemperature']
+X = df2[predictors]
+y = df2['meantemp']
 
 # Add a constant to the predictor variable set to represent the Bo intercept
 X = sm.add_constant(X)  
 X.iloc[:5, :5]
 
-
-#backward elimination
+#backwarfd elimintaion
 # (1) set a significance value
 alpha = 0.05
 
@@ -131,9 +108,8 @@ model = sm.OLS(y, X).fit()
 model.summary()
 
 
-# (4) backward elimination
 q = True
-while q:
+while (q):
     max_index, max_value = max(enumerate(model.pvalues), key=operator.itemgetter(1))
     if (max_value > 0.05):
         X = X.drop(model.pvalues.index[max_index], axis=1)
@@ -141,19 +117,19 @@ while q:
         print(model.summary())
     else:
         q = False
-# back ward eliminatio end
+#backwarfd elimintaion
+        
+        
+#training and testing
+X_train = X.head(800)
+X_test = X.tail(353)
 
- 
-X = X.drop('const', axis=1)
+y_train = y.head(800)
+y_test = y.tail(353)
+
 
 
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12) 
-
-X_train = X.head(800)
-X_test = X.tail(397)
-
-y_train = y.head(800)
-y_test = y.tail(397)
 
 regressor = LinearRegression()
 
@@ -163,11 +139,10 @@ regressor.fit(X_train, y_train)
 # make a prediction set using the test set
 prediction = regressor.predict(X_test)
 
-# Evaluate the prediction accuracy of the model
-
 print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))  
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
 print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
+
 
 
 fig = plt.figure(figsize=(20,10))
@@ -182,4 +157,7 @@ plt.show()
 
 
 
- 
+
+
+
+

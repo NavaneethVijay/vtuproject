@@ -11,10 +11,7 @@ import statsmodels.api as sm
 import operator
 from sklearn.metrics import mean_absolute_error, median_absolute_error  
 
-df = pd.read_csv(r"Land_SLP_AT_DT_WD_WS.csv").set_index('date')
-
-
-#tmp = df[['meantempm', 'meandewptm']].head(10)  
+df = pd.read_csv(r"Land_SLP_AT_DT_WD_WS.csv")
 
 N = 1
 features = ["date", "meantempm", "meandewptm", "meanpressurem", "maxhumidity", "minhumidity", "maxtempm",  
@@ -64,18 +61,17 @@ spread['outliers'] = (spread['min']<(spread['25%']-(3*IQR)))|(spread['max'] > (s
 # just display the features containing extreme outliers
 spread.loc[spread.outliers,]   
 
-get_ipython().run_line_magic('matplotlib', 'inline')
+#histogram 
+"""get_ipython().run_line_magic('matplotlib', 'inline')
 
-plt.rcParams['figure.figsize'] = [14, 8]  
-df.maxhumidity_1.hist()  
-plt.title('Distribution of maxhumidity_1')  
-plt.xlabel('maxhumidity_4')  
-plt.show() 
-
-df.minpressurem_1.hist()  
-plt.title('Distribution of minpressurem_1')  
-plt.xlabel('minpressurem_1')  
-plt.show() 
+for sp in spread.index:
+    plt.rcParams['figure.figsize'] = [14, 8]  
+    print(sp)
+    df[sp].hist() 
+    plt.title('Distribution of {}'.format(sp))  
+    plt.xlabel(sp)  
+    plt.show()"""
+#histogram 
 
 for precip_col in ['precipm_1', 'precipm_2', 'precipm_3']:  
     # create a boolean array of values representing nans
@@ -165,4 +161,11 @@ print("The Explained Variance: %.2f" % regressor.score(X_test, y_test))
 print("The Mean Absolute Error: %.2f degrees celsius" % mean_absolute_error(y_test, prediction))  
 print("The Median Absolute Error: %.2f degrees celsius" % median_absolute_error(y_test, prediction))
 
-plt.plot(X_test.index[5:23], y_test[5:23], X_test.index[5:23], prediction[5:23])
+fig = plt.figure(figsize=(20,10))
+ax1 = fig.add_subplot(111)
+ax1.plot(y_test.tolist(), label='actual values')
+ax1.plot(prediction,label='predicted values')
+plt.xlabel('Training dataset')  
+plt.ylabel('Mean temperature') 
+plt.legend(loc='upper left');
+plt.show()

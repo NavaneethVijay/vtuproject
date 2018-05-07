@@ -10,8 +10,7 @@ from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm 
 import operator
 
-df = pd.read_csv(r"dataset.csv").set_index('date')
-
+df = pd.read_csv(r"dataset.csv")
 
 #tmp = df[['meantempm', 'meandewptm']].head(10)  
 
@@ -61,7 +60,7 @@ spread['outliers'] = (spread['min']<(spread['25%']-(3*IQR)))|(spread['max'] > (s
 # just display the features containing extreme outliers
 spread.loc[spread.outliers,]   
 
-get_ipython().run_line_magic('matplotlib', 'inline')
+'''get_ipython().run_line_magic('matplotlib', 'inline')
 
 plt.rcParams['figure.figsize'] = [14, 8]  
 df.maxhumidity_1.hist()  
@@ -72,7 +71,7 @@ plt.show()
 df.minpressurem_1.hist()  
 plt.title('Distribution of minpressurem_1')  
 plt.xlabel('minpressurem_1')  
-plt.show() 
+plt.show()'''
 
 for precip_col in ['precipm_1', 'precipm_2', 'precipm_3']:  
     # create a boolean array of values representing nans
@@ -95,6 +94,37 @@ predictors = ['meantempm_1',  'meantempm_2',  'meantempm_3',
               'maxtempm_1',   'maxtempm_2',   'maxtempm_3']
 
 df2 = df[['meantempm'] + predictors] 
+
+
+
+get_ipython().run_line_magic('matplotlib', 'inline')
+
+# manually set the parameters of the figure to and appropriate size
+plt.rcParams['figure.figsize'] = [16, 22]
+
+# call subplots specifying the grid structure we desire and that 
+# the y axes should be shared
+fig, axes = plt.subplots(nrows=6, ncols=3, sharey=True)
+
+# Since it would be nice to loop through the features in to build this plot
+# let us rearrange our data into a 2D array of 6 rows and 3 columns
+arr = np.array(predictors).reshape(6, 3)
+
+# use enumerate to loop over the arr 2D array of rows and columns
+# and create scatter plots of each meantempm vs each feature
+for row, col_arr in enumerate(arr):  
+    for col, feature in enumerate(col_arr):
+        axes[row, col].scatter(df2[feature], df2['meantempm'])
+        if col == 0:
+            axes[row, col].set(xlabel=feature, ylabel='meantempm')
+        else:
+            axes[row, col].set(xlabel=feature)
+plt.show()
+
+
+
+
+
 
 
 # separate our my predictor variables (X) from my outcome variable y
